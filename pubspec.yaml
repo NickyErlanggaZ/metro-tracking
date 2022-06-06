@@ -1,0 +1,49 @@
+name: metro_tracking_new
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.15.1 <3.0.0"
+
+# Package for release version
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+# Package for debug version
+dev_dependencies:
+  flutter_lints: ^1.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  # Image assets
+  assets:
+    - assets/img/ic_metromesin.png
+
+  # Font assets
+  fonts:
+      - family: Poppins
+        fonts: 
+          - asset: assets/fonts/Poppins-Thin.ttf
+            weight: 100
+          - asset: assets/fonts/Poppins-Light.ttf
+            weight: 300
+          - asset: assets/fonts/Poppins-Regular.ttf
+            weight: 400
+          - asset: assets/fonts/Poppins-Medium.ttf
+            weight: 500
+          - asset: assets/fonts/Poppins-SemiBold.ttf
+            weight: 700
+          - asset: assets/fonts/Poppins-Bold.ttf
+            weight: 700
+          - asset: assets/fonts/Poppins-Black.ttf
+            weight: 800
