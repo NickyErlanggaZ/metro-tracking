@@ -85,14 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      TextButton.icon(
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/search");
-                          },
-                          style: TextButton.styleFrom(
-                              primary: ColorConstant.secondaryColor),
-                          icon: const Text("Lacak Paket Anda"),
-                          label: const Icon(Icons.arrow_forward_ios_outlined))
                     ],
                   ),
                 ),
