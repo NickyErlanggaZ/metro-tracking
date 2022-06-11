@@ -15,6 +15,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  http: ^0.13.4
+  shared_preferences: ^2.0.13
+  google_maps_flutter: ^2.1.7
+  permission_handler: ^8.3.0
+  geolocator: ^8.0.1
+  location: ^4.3.0
 
 # Package for debug version
 dev_dependencies:
@@ -28,6 +34,7 @@ flutter:
   # Image assets
   assets:
     - assets/img/ic_metromesin.png
+    - assets/img/ic_truck.bmp
 
   # Font assets
   fonts:
