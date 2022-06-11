@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metro_tracking_new/controller/login_controller.dart';
 import 'package:metro_tracking_new/utils/app_constant.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 
@@ -11,6 +12,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  LoginController controller = LoginController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +48,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
-                      controller: TextEditingController(),
+                      controller: controller.inputEmail,
                       decoration: InputDecoration(
-                          labelText: "Username",
+                          labelText: "Email",
                           labelStyle:
                               TextStyle(color: ColorConstant.secondaryColor)),
                     ),
                     const SizedBox(height: 20),
                     TextField(
-                      controller: TextEditingController(),
+                      controller: controller.inputPassword,
                       obscureText: true,
                       decoration: const InputDecoration(labelText: "Password"),
                     ),
@@ -72,7 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          controller.login(context,controller.inputEmail.text, controller.inputPassword.text);
+                        },
                         style: ElevatedButton.styleFrom(
                             primary: ColorConstant.primaryColor),
                         child: FractionallySizedBox(
