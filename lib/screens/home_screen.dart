@@ -1,150 +1,177 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:metro_tracking_new/utils/color_constant.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  BitmapDescriptor? driver;
-  Position? position;
-  Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController? mapController;
-  Marker? driverMarker, destinationMarker;
-  LatLng? driverPosition, destinationPosition;
-  final CameraPosition _camera = CameraPosition(
-      target: LatLng(-7.9443456, 112.6193162), zoom: 19.151926040649414);
-
-  LatLng _lastMapPosition = _center;
-
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-
-  @override
-  void initState() {
-    super.initState();
-    setMarkerIcon().then((value) {
-      setState(() {});
-    });
-    setup().then((value) {
-      setState(() {});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        zoomControlsEnabled: false,
-        initialCameraPosition: _camera,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: {
-          driverMarker ?? Marker(markerId: MarkerId("bruh")),
-          destinationMarker ?? Marker(markerId: MarkerId("bruh"))
-        },
-        onCameraMove: _onCameraMove,
+      body: Column(
+        children: [
+          Container(
+            color: ColorConstant.primaryColor,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 24.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: ColorConstant.secondaryColor,
+                      size: 20,
+                    ),
+                    const SizedBox(
+                      width: 9,
+                    ),
+                    Text(
+                      "Jl. Veteran, Malang",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: ColorConstant.secondaryColor),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: const Color(0xFFF8DB79), width: 3.0),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15.0)),
+                      ),
+                      child: Icon(Icons.person),
+                    ),
+                    const SizedBox(
+                      width: 14,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text("Courtney Henry",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 20)),
+                        Text("Manager",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400, fontSize: 14)),
+                      ],
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextField(
+                  controller: TextEditingController(),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFF8DB79),
+                    hintText: "Search...",
+                    hintStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: ColorConstant.secondaryColor),
+                    suffixIcon: Icon(Icons.search,
+                        color: ColorConstant.secondaryColor, size: 25),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            const BorderSide(color: Colors.transparent)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            const BorderSide(color: Colors.transparent)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                        borderSide:
+                            const BorderSide(color: Colors.transparent)),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Kendaraan",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                  Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    decoration: BoxDecoration(
+                        color: ColorConstant.backgroundColor,
+                        borderRadius: BorderRadius.circular(7),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.05),
+                              offset: Offset(2, 3),
+                              blurRadius: 47),
+                        ]),
+                    child: ExpansionTile(
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFF8DB79),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Icon(Icons.warning_amber_rounded,
+                            size: 30, color: ColorConstant.primaryColor),
+                      ),
+                      title: Text("Mobil",
+                          style: TextStyle(
+                              color: ColorConstant.secondaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500)),
+                      subtitle: const Text("10 items",
+                          style: TextStyle(
+                              color: Color(0xFF878787),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400)),
+                      trailing: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(9),
+                            border: Border.all(color: const Color(0xFFEDEDED))),
+                        child: const Icon(Icons.arrow_forward_ios_outlined),
+                      ),
+                      children: [
+                        ListTile(
+                          title: Text("Toyota Yaris",
+                              style: TextStyle(
+                                  color: ColorConstant.secondaryColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500)),
+                          subtitle: const Text("KH 92129 VN",
+                              style: TextStyle(
+                                  color: Color(0xFF878787),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400)),
+                          trailing: const Text(
+                            "Update\n08.23 AM",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                                color: Color(0xFF878787),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ))
+        ],
       ),
     );
-  }
-
-  void _onCameraMove(CameraPosition position) {
-    _lastMapPosition = position.target;
-  }
-
-  Future<bool> setup() async {
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    print("mylocation:  ${position!.latitude}, ${position!.longitude}");
-    driverPosition = LatLng(position!.latitude, position!.longitude);
-    destinationPosition = LatLng(-7.9443456, 112.6193162);
-    driverMarker = Marker(
-        markerId: MarkerId("driver"),
-        position: LatLng(position!.latitude, position!.longitude),
-        icon: driver!);
-    destinationMarker = const Marker(
-        markerId: MarkerId("destination"),
-        position: LatLng(-7.9443456, 112.6193162));
-    return true;
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    _controller.complete(controller);
-
-    LatLngBounds bound = LatLngBounds(
-        southwest: destinationPosition!, northeast: driverPosition!);
-
-    CameraUpdate u2 = CameraUpdate.newLatLngBounds(bound, 50);
-    mapController!.animateCamera(u2).then((void v) {
-      check(u2, mapController!);
-    });
-  }
-
-  void check(CameraUpdate u, GoogleMapController c) async {
-    c.animateCamera(u);
-    mapController!.animateCamera(u);
-    LatLngBounds l1 = await c.getVisibleRegion();
-    LatLngBounds l2 = await c.getVisibleRegion();
-    print(l1.toString());
-    print(l2.toString());
-    if (l1.southwest.latitude == -90 || l2.southwest.latitude == -90)
-      check(u, c);
-  }
-
-  Future<bool> setMarkerIcon() async {
-    try{
-      driver = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/img/ic_truck.bmp');
-      return true;
-    }catch (e){
-      print(e);
-      return false;
-    }
-  }
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
   }
 }
