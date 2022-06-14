@@ -37,34 +37,39 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(
                   height: 24,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color(0xFFF8DB79), width: 3.0),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15.0)),
+                InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(context, "/profile");
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: const Color(0xFFF8DB79), width: 3.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15.0)),
+                        ),
+                        child: Icon(Icons.person),
                       ),
-                      child: Icon(Icons.person),
-                    ),
-                    const SizedBox(
-                      width: 14,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text("Courtney Henry",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 20)),
-                        Text("Manager",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 14)),
-                      ],
-                    )
-                  ],
+                      const SizedBox(
+                        width: 14,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text("Courtney Henry",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 20)),
+                          Text("Manager",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 14)),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 24,
