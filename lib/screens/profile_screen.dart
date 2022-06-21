@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:metro_tracking_new/controller/profile_controller.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:metro_tracking_new/utils/app_constant.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
-
+  ProfileScreen({Key? key}) : super(key: key);
+  ProfileController controller = ProfileController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   )),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
                       color: ColorConstant.backgroundColor,
@@ -89,8 +90,11 @@ class ProfileScreen extends StatelessWidget {
               bottom: 36,
               left: 20,
               child: ElevatedButton.icon(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(primary: Color(0xFFFBE9AE)),
+                onPressed: () {
+                  controller.logout(context);
+                },
+                style:
+                    ElevatedButton.styleFrom(primary: const Color(0xFFFBE9AE)),
                 icon: Icon(Icons.exit_to_app,
                     color: ColorConstant.secondaryColor),
                 label: Text("Log Out",
