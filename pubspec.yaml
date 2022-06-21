@@ -21,6 +21,8 @@ dependencies:
   permission_handler: ^8.3.0
   geolocator: ^8.0.1
   location: ^4.3.0
+  sliding_up_panel: ^2.0.0+1
+  oktoast: ^3.1.5
 
 # Package for debug version
 dev_dependencies:
@@ -38,6 +40,9 @@ flutter:
 
   # Font assets
   fonts:
+      - family:  CustomIcons
+        fonts:
+          - asset: assets/fonts/CustomIcons.ttf
       - family: Poppins
         fonts: 
           - asset: assets/fonts/Poppins-Thin.ttf
