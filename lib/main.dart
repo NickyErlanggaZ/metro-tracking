@@ -28,14 +28,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
             primaryColor: ColorConstant.primaryColor,
             backgroundColor: ColorConstant.backgroundColor,
-            outlinedButtonTheme: OutlinedButtonThemeData(
-              style: OutlinedButton.styleFrom(
-                primary: ColorConstant.inActiveColor,
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                shape: const StadiumBorder(),
-                side: BorderSide(color: ColorConstant.inActiveColor,)
-              ),
-            ),
             fontFamily: 'Poppins'),
         routes: AppConstant.route,
         home: const SplashScreen(),
