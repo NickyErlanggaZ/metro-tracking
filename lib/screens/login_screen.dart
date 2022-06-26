@@ -14,6 +14,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   LoginController controller = LoginController();
   bool _isHidden = true;
+
+  @override
+  void dispose() {
+    controller.inputEmail.dispose();
+    controller.inputPassword.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
