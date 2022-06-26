@@ -1,8 +1,35 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:metro_tracking_new/components/list_group.dart';
+import 'package:metro_tracking_new/screens/profile_screen.dart';
+import 'package:metro_tracking_new/utils/app_constant.dart';
+import 'package:metro_tracking_new/controller/home_controller.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  HomeController controller = HomeController();
+
+  @override
+  void initState() {
+    controller.group;
+    controller.device;
+    controller.getUserProfile();
+    refresh();
+    super.initState();
+  }
+
+  refresh() async {
+    var duration = const Duration(seconds: 5);
+    return Timer(duration, () => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +65,13 @@ class HomeScreen extends StatelessWidget {
                   height: 24,
                 ),
                 InkWell(
-                  onTap: (){
-                    Navigator.pushNamed(context, "/profile");
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen(
+                                name: controller.name!,
+                                email: controller.email!)));
                   },
                   child: Row(
                     children: [
@@ -59,8 +91,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text("Courtney Henry",
+                        children: [
+                          Text(controller.name ?? "null",
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 20)),
                           Text("Manager",
@@ -104,74 +136,32 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text("Kendaraan",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                  Container(
-                    margin: const EdgeInsets.only(top: 16),
-                    decoration: BoxDecoration(
-                        color: ColorConstant.backgroundColor,
-                        borderRadius: BorderRadius.circular(7),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.05),
-                              offset: Offset(2, 3),
-                              blurRadius: 47),
-                        ]),
-                    child: ExpansionTile(
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            color: const Color(0xFFF8DB79),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Icon(Icons.warning_amber_rounded,
-                            size: 30, color: ColorConstant.primaryColor),
-                      ),
-                      title: Text("Mobil",
-                          style: TextStyle(
-                              color: ColorConstant.secondaryColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500)),
-                      subtitle: const Text("10 items",
-                          style: TextStyle(
-                              color: Color(0xFF878787),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400)),
-                      trailing: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(9),
-                            border: Border.all(color: const Color(0xFFEDEDED))),
-                        child: const Icon(Icons.arrow_forward_ios_outlined),
-                      ),
-                      children: [
-                        ListTile(
-                          title: Text("Toyota Yaris",
-                              style: TextStyle(
-                                  color: ColorConstant.secondaryColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500)),
-                          subtitle: const Text("KH 92129 VN",
-                              style: TextStyle(
-                                  color: Color(0xFF878787),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400)),
-                          trailing: const Text(
-                            "Update\n08.23 AM",
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                                color: Color(0xFF878787),
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        )
-                      ],
-                    ),
+                  SizedBox(
+                    height: ScreenSize(context).height * 0.48,
+                    child: FutureBuilder(
+                        future: controller.group,
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return ListView.builder(
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                var data = snapshot.data[index];
+                                return ListGroup(
+                                    groupId: data.id, groupName: data.name, futureDevice: controller.device,);
+                              });
+                        }),
                   )
                 ],
               ))
