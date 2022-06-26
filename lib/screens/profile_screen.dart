@@ -3,8 +3,11 @@ import 'package:metro_tracking_new/controller/profile_controller.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:metro_tracking_new/utils/app_constant.dart';
 
+// ignore: must_be_immutable
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+  final String name;
+  final String email;
+  ProfileScreen({Key? key,required this.name,required this.email}) : super(key: key);
   ProfileController controller = ProfileController();
   @override
   Widget build(BuildContext context) {
@@ -36,12 +39,12 @@ class ProfileScreen extends StatelessWidget {
                               color: ColorConstant.secondaryColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w500)),
-                      Text("Courtney Henry",
+                      Text(name,
                           style: TextStyle(
                               color: ColorConstant.secondaryColor,
                               fontSize: 20,
                               fontWeight: FontWeight.w600)),
-                      Text("courtneyhenry@gmail.com",
+                      Text(email,
                           style: TextStyle(
                               color: ColorConstant.secondaryColor,
                               fontSize: 14,
@@ -60,27 +63,32 @@ class ProfileScreen extends StatelessWidget {
                             offset: Offset(2, 3),
                             blurRadius: 47),
                       ]),
-                  child: ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFF8DB79),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Icon(Icons.warning_amber_rounded,
-                          size: 30, color: ColorConstant.primaryColor),
+                  child: InkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/change-password');
+                    },
+                    child: ListTile(
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFF8DB79),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Icon(Icons.warning_amber_rounded,
+                            size: 30, color: ColorConstant.primaryColor),
+                      ),
+                      title: const Text("Keamanan",
+                          style: TextStyle(
+                              color: Color(0xFF878787),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400)),
+                      subtitle: Text("Ubah Password",
+                          style: TextStyle(
+                              color: ColorConstant.secondaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500)),
+                      trailing: Icon(Icons.arrow_forward_ios_outlined),
                     ),
-                    title: const Text("Keamanan",
-                        style: TextStyle(
-                            color: Color(0xFF878787),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400)),
-                    subtitle: Text("Ubah Password",
-                        style: TextStyle(
-                            color: ColorConstant.secondaryColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500)),
-                    trailing: Icon(Icons.arrow_forward_ios_outlined),
                   ),
                 ),
               )
