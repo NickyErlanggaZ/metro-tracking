@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:metro_tracking_new/utils/image_constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,8 +19,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   splashScreen() async {
     var duration = const Duration(seconds: 5);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     return Timer(duration, () {
-      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+      if(prefs.containsKey('user_auth')){
+        Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);  
+      }else{
+        Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+      }
     });
   }
 
