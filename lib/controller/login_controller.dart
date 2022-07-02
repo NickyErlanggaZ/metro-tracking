@@ -12,14 +12,14 @@ class LoginController {
 
   login(context, String email, String password) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    if (email == "" && password == "") {
+    if (email == "" || password == "") {
       showToast('Username dan Password wajib diisi');
     } else {
       try {
         var response = await auth.login(email, password);
-        var data = json.decode(response.body);
-        debugPrint(response.body);
         if (response.statusCode == 200) {
+          var data = json.decode(response.body);
+          debugPrint(response.body);
           pref.setInt('user_id', data['id']);
           pref.setString('user_name', data['name']);
           pref.setString('user_email', data['email']);
