@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:metro_tracking_new/domain/model/devices.dart';
+import 'package:metro_tracking_new/domain/model/positions.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:metro_tracking_new/utils/custom_icons.dart';
 
@@ -7,10 +9,18 @@ class DetailKendaraan extends StatelessWidget {
   final bool isCollapse;
   final Function(bool)? onExpand;
   final Devices data;
-  const DetailKendaraan({Key? key, required this.isCollapse, this.onExpand, required this.data}) : super(key: key);
+  final Positions position;
+  const DetailKendaraan(
+      {Key? key,
+      required this.isCollapse,
+      this.onExpand,
+      required this.data,
+      required this.position})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var time = DateFormat('dd MMM yyyy | hh:mm a').format(data.lastUpdate);
     return Container(
       width: 320,
       margin: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
@@ -47,7 +57,7 @@ class DetailKendaraan extends StatelessWidget {
         trailing: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-              color: Color(0xFFF8DD7A),
+              color: const Color(0xFFF8DD7A),
               borderRadius: BorderRadius.circular(9),
               border: Border.all(color: const Color(0xFFEDEDED))),
           child: Row(
@@ -71,37 +81,88 @@ class DetailKendaraan extends StatelessWidget {
           ),
         ),
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Update"),
-                  Text("Status"),
-                  Text("Kecepatan"),
-                  Text("Posisi"),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(":"),
-                  Text(":"),
-                  Text(":"),
-                  Text(":"),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("08 Juni 2022 | 09:32 AM"),
-                  Text(data.status),
-                  Text("3 Km/h"),
-                  Text("-7.9443456, 112.6193162"),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Update",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text("Status",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text("Kecepatan",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text("Posisi",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(":",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text(":",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text(":",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text(":",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(time,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text(data.status,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text("${position.speed} Km/h",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                    Text("${position.latitude}, ${position.longitude}",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: ColorConstant.dark)),
+                  ],
+                ),
+              ],
+            ),
           )
         ],
       ),

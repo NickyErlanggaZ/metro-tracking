@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:metro_tracking_new/components/detail_kendaraan.dart';
 import 'package:metro_tracking_new/controller/track_controller.dart';
 import 'package:metro_tracking_new/domain/model/devices.dart';
@@ -10,9 +11,17 @@ import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:metro_tracking_new/utils/app_constant.dart';
 
+// ignore: must_be_immutable
 class TrackScreen extends StatefulWidget {
-  final Devices device;
-  const TrackScreen({Key? key, required this.device}) : super(key: key);
+  Devices device;
+  int index;
+  String groupName;
+  TrackScreen(
+      {Key? key,
+      required this.device,
+      required this.index,
+      required this.groupName})
+      : super(key: key);
 
   @override
   State<TrackScreen> createState() => _TrackScreenState();
@@ -24,19 +33,24 @@ class _TrackScreenState extends State<TrackScreen> {
   static const LatLng _center = LatLng(45.521563, -122.677433);
   LatLng _lastMapPosition = _center;
   Future<List<Positions>>? _position;
+  late Future<BitmapDescriptor> _markerIcon;
 
   @override
   void initState() {
     _position =
         controller.position(widget.device.id, "${widget.device.lastUpdate}");
+    _markerIcon = controller.markerIcon(widget.groupName);
     _refresh();
     super.initState();
   }
 
   void _refresh() {
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 30), (timer) {
       if (mounted) {
-        setState(() {});
+        setState(() {
+          _position = controller.position(
+              widget.device.id, "${widget.device.lastUpdate}");
+        });
       }
     });
   }
@@ -44,13 +58,19 @@ class _TrackScreenState extends State<TrackScreen> {
   bool _isCollapse = false;
   double _opacity = 1.0;
   int _groupId = 0;
+  Positions? posisi;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _position,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Container(
+                color: ColorConstant.backgroundColor,
+                child: const Center(child: CircularProgressIndicator()));
+          }
+          if (snapshot.hasData) {
+            posisi = snapshot.data[0];
           }
           return Scaffold(
               body: SlidingUpPanel(
@@ -97,6 +117,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                     child: CircularProgressIndicator());
                               }
                               return DefaultTabController(
+                                  initialIndex: widget.index,
                                   length: snapshot.data.length,
                                   child: Column(
                                     children: [
@@ -104,6 +125,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                         onTap: (value) {
                                           setState(() {
                                             _groupId = snapshot.data[value].id;
+                                            widget.index = value;
                                           });
                                         },
                                         labelColor: ColorConstant.primaryColor,
@@ -162,41 +184,85 @@ class _TrackScreenState extends State<TrackScreen> {
                                                                 int index) {
                                                           var data = snapshot
                                                               .data[index];
+                                                          var time = DateFormat(
+                                                                  'dd-MM-yyyy hh:mm a')
+                                                              .format(data
+                                                                  .lastUpdate);
                                                           return item.id ==
                                                                   data.groupId
-                                                              ? ListTile(
-                                                                  title: Text(
-                                                                      data.name,
-                                                                      style: TextStyle(
-                                                                          color: ColorConstant
-                                                                              .secondaryColor,
-                                                                          fontSize:
-                                                                              16,
-                                                                          fontWeight:
-                                                                              FontWeight.w500)),
-                                                                  subtitle: Text(
-                                                                      data.attributes
-                                                                          .platNomer,
-                                                                      style: TextStyle(
-                                                                          color: ColorConstant
-                                                                              .inActiveColor,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w400)),
-                                                                  trailing:
-                                                                      Text(
-                                                                    "Update\n08.23 AM",
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .end,
-                                                                    style: TextStyle(
-                                                                        color: ColorConstant
-                                                                            .inActiveColor,
-                                                                        fontSize:
-                                                                            10,
-                                                                        fontWeight:
-                                                                            FontWeight.w400),
+                                                              ? InkWell(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                        () {
+                                                                      widget.device =
+                                                                          data;
+                                                                      _position = controller.position(
+                                                                          data.id,
+                                                                          "${data.lastUpdate}");
+                                                                      _markerIcon =
+                                                                          controller
+                                                                              .markerIcon(item.name);
+                                                                      controller.moveCamera(
+                                                                          _controller,
+                                                                          LatLng(
+                                                                              posisi!.latitude,
+                                                                              posisi!.longitude),
+                                                                          20);
+                                                                    });
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    decoration: widget.device.id ==
+                                                                            data
+                                                                                .id
+                                                                        ? BoxDecoration(
+                                                                            color: const Color(
+                                                                                0xFFFEF9EB),
+                                                                            borderRadius: BorderRadius.circular(
+                                                                                7),
+                                                                            border: Border.all(
+                                                                                color: const Color(
+                                                                                    0xFFF3C201)),
+                                                                            boxShadow: const [
+                                                                                BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.05), offset: Offset(2, 3), blurRadius: 47),
+                                                                              ])
+                                                                        : BoxDecoration(
+                                                                            color:
+                                                                                ColorConstant.backgroundColor,
+                                                                            borderRadius: BorderRadius.circular(7),
+                                                                            boxShadow: const [
+                                                                                BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.05), offset: Offset(2, 3), blurRadius: 47),
+                                                                              ]),
+                                                                    child:
+                                                                        ListTile(
+                                                                      title: Text(
+                                                                          data
+                                                                              .name,
+                                                                          style: TextStyle(
+                                                                              color: ColorConstant.secondaryColor,
+                                                                              fontSize: 16,
+                                                                              fontWeight: FontWeight.w500)),
+                                                                      subtitle: Text(
+                                                                          data.attributes
+                                                                              .platNomer,
+                                                                          style: TextStyle(
+                                                                              color: ColorConstant.inActiveColor,
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w400)),
+                                                                      trailing:
+                                                                          Text(
+                                                                        "Update\n$time",
+                                                                        textAlign:
+                                                                            TextAlign.end,
+                                                                        style: TextStyle(
+                                                                            color: ColorConstant
+                                                                                .inActiveColor,
+                                                                            fontSize:
+                                                                                10,
+                                                                            fontWeight:
+                                                                                FontWeight.w400),
+                                                                      ),
+                                                                    ),
                                                                   ),
                                                                 )
                                                               : const SizedBox();
@@ -215,24 +281,34 @@ class _TrackScreenState extends State<TrackScreen> {
                     alignment: Alignment.topCenter,
                     children: [
                       Positioned.fill(
-                        child: GoogleMap(
-                          mapType: MapType.normal,
-                          zoomControlsEnabled: false,
-                          initialCameraPosition: CameraPosition(
-                              target: LatLng(snapshot.data[0].latitude,
-                                  snapshot.data[0].longitude),
-                              zoom: 19.151926040649414),
-                          onMapCreated: (GoogleMapController controller) {
-                            _controller.complete(controller);
-                          },
-                          markers: {
-                            Marker(
-                                markerId: MarkerId("coba"),
-                                position: LatLng(snapshot.data[0].latitude,
-                                    snapshot.data[0].longitude)),
-                          },
-                          onCameraMove: _onCameraMove,
-                        ),
+                        child: FutureBuilder(
+                            future: _markerIcon,
+                            builder: (context, AsyncSnapshot snap) {
+                              if (!snap.hasData) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              return GoogleMap(
+                                mapType: MapType.normal,
+                                zoomControlsEnabled: false,
+                                initialCameraPosition: CameraPosition(
+                                    target: LatLng(snapshot.data[0].latitude,
+                                        snapshot.data[0].longitude),
+                                    zoom: 20),
+                                onMapCreated: (GoogleMapController controller) {
+                                  _controller.complete(controller);
+                                },
+                                markers: {
+                                  Marker(
+                                      icon: snap.data,
+                                      markerId: MarkerId(widget.device.name),
+                                      position: LatLng(
+                                          snapshot.data[0].latitude,
+                                          snapshot.data[0].longitude)),
+                                },
+                                onCameraMove: _onCameraMove,
+                              );
+                            }),
                       ),
                       Positioned(
                         top: 25,
@@ -240,6 +316,7 @@ class _TrackScreenState extends State<TrackScreen> {
                           opacity: _opacity,
                           child: DetailKendaraan(
                             data: widget.device,
+                            position: snapshot.data[0],
                             isCollapse: _isCollapse,
                             onExpand: (value) => setState(() {
                               _isCollapse = value;
