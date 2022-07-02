@@ -38,7 +38,7 @@ flutter_app_name:
 
 # This is for launcher icon setup
 flutter_icons:
-  image_path: "assets/img/ic_metromesin.png"
+  image_path: "assets/img/ic_metrotracking.png"
   android: true
   ios: true
 
@@ -47,8 +47,10 @@ flutter:
 
   # Image assets
   assets:
-    - assets/img/ic_metromesin.png
-    - assets/img/ic_truck.bmp
+    - assets/img/ic_metrotracking.png
+    - assets/img/truck.png
+    - assets/img/car.png
+    - assets/img/motorbike.png
 
   # Font assets
   fonts:
