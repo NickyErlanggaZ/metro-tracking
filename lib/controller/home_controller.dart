@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:metro_tracking_new/domain/model/devices.dart';
 import 'package:metro_tracking_new/domain/model/groups.dart';
 import 'package:metro_tracking_new/domain/services/data_service.dart';
@@ -6,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeController{
   String? name;
   String? email;
+  TextEditingController searchController = TextEditingController();
   Future<List<Groups>> group = DataService().getGroupsList();
   Future<List<Devices>> device = DataService().getDevicesList();
   getUserProfile() async {

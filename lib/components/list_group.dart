@@ -3,22 +3,26 @@ import 'package:metro_tracking_new/domain/model/devices.dart';
 import 'package:metro_tracking_new/screens/track_screen.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:metro_tracking_new/utils/custom_icons.dart';
+import 'package:intl/intl.dart';
 
 class ListGroup extends StatelessWidget {
+  final bool isCollapse;
+  final Function(bool)? onExpand;
   final int groupId;
   final String groupName;
   final Future<List<Devices>> futureDevice;
+  final int groupIndex;
   const ListGroup(
       {Key? key,
       required this.groupId,
       required this.groupName,
-      required this.futureDevice})
+      required this.futureDevice, required this.groupIndex, required this.isCollapse, this.onExpand})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     var _count = 0;
     return Container(
-        margin: const EdgeInsets.only(top: 10),
+        margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
             color: ColorConstant.backgroundColor,
             borderRadius: BorderRadius.circular(7),
@@ -34,8 +38,8 @@ class ListGroup extends StatelessWidget {
               if (!snap.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
-              for (var item in snap.data){
-                if (item.groupId == groupId){
+              for (var item in snap.data) {
+                if (item.groupId == groupId) {
                   _count++;
                 }
               }
@@ -54,7 +58,7 @@ class ListGroup extends StatelessWidget {
                         color: ColorConstant.secondaryColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w500)),
-                subtitle: Text( "$_count items",
+                subtitle: Text("$_count items",
                     style: const TextStyle(
                         color: Color(0xFF878787),
                         fontSize: 14,
@@ -64,8 +68,11 @@ class ListGroup extends StatelessWidget {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(9),
                       border: Border.all(color: const Color(0xFFEDEDED))),
-                  child: const Icon(Icons.arrow_forward_ios_outlined),
+                  child: Icon(!isCollapse
+                    ? Icons.keyboard_arrow_right_rounded
+                    : Icons.keyboard_arrow_down_rounded,color: ColorConstant.inActiveColor),
                 ),
+                onExpansionChanged: onExpand,
                 children: [
                   ListView.builder(
                       shrinkWrap: true,
@@ -73,21 +80,26 @@ class ListGroup extends StatelessWidget {
                       itemCount: snap.data.length,
                       itemBuilder: (BuildContext context, int index) {
                         var data = snap.data[index];
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => TrackScreen(device:data)));
-                          },
-                          child: data.groupId == groupId
-                              ? listTileDevice(data.name)
-                              : _count == 0 && data.groupId == groupId ? const Center(
-                                  child: Padding(
-                                  padding: EdgeInsets.all(25.0),
-                                  child: Text("Tidak ada"),
-                                )) : const SizedBox(),
-                        );
+                        var time = DateFormat('dd-MM-yyyy hh:mm a')
+                            .format(data.lastUpdate);
+                        return data.groupId == groupId
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => TrackScreen(
+                                              device: data, index: groupIndex, groupName: groupName,)));
+                                },
+                                child: listTileDevice(data.name,
+                                    data.attributes.platNomer ?? "null", time))
+                            : _count == 0 && data.groupId == groupId
+                                ? const Center(
+                                    child: Padding(
+                                    padding: EdgeInsets.all(25.0),
+                                    child: Text("Tidak ada"),
+                                  ))
+                                : const SizedBox();
                       })
                 ],
               );
@@ -107,20 +119,20 @@ class ListGroup extends StatelessWidget {
     }
   }
 
-  Widget listTileDevice(String deviceName) {
+  Widget listTileDevice(String deviceName, String platNomer, lastUpdate) {
     return ListTile(
       title: Text(deviceName,
           style: TextStyle(
               color: ColorConstant.secondaryColor,
               fontSize: 16,
               fontWeight: FontWeight.w500)),
-      subtitle: Text("KH 92129 VN",
+      subtitle: Text(platNomer,
           style: TextStyle(
               color: ColorConstant.inActiveColor,
               fontSize: 14,
               fontWeight: FontWeight.w400)),
       trailing: Text(
-        "Update\n08.23 AM",
+        "Update\n$lastUpdate",
         textAlign: TextAlign.end,
         style: TextStyle(
             color: ColorConstant.inActiveColor,

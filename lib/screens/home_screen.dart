@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:metro_tracking_new/components/list_group.dart';
+import 'package:metro_tracking_new/components/search_item.dart';
 import 'package:metro_tracking_new/screens/profile_screen.dart';
-import 'package:metro_tracking_new/utils/app_constant.dart';
 import 'package:metro_tracking_new/controller/home_controller.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 
@@ -23,17 +23,32 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.device;
     controller.getUserProfile();
     refresh();
+    _refresh();
     super.initState();
   }
 
   refresh() async {
-    var duration = const Duration(seconds: 5);
+    var duration = const Duration(seconds: 2);
     return Timer(duration, () => setState(() {}));
   }
 
+  void _refresh() {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
+      if (mounted) {
+        setState(() {
+          controller.group;
+          controller.device;
+        });
+      }
+    });
+  }
+
+  String _search = "";
+  List<bool> _isCollapse = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Container(
@@ -93,9 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(controller.name ?? "null",
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 20)),
-                          Text("Manager",
+                          const Text("Manager",
                               style: TextStyle(
                                   fontWeight: FontWeight.w400, fontSize: 14)),
                         ],
@@ -107,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 24,
                 ),
                 TextField(
-                  controller: TextEditingController(),
+                  controller: controller.searchController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFF8DB79),
@@ -116,8 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: ColorConstant.secondaryColor),
-                    suffixIcon: Icon(Icons.search,
-                        color: ColorConstant.secondaryColor, size: 25),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _search = controller.searchController.text;
+                          debugPrint(_search);
+                        });
+                      },
+                      icon: Icon(Icons.search,
+                          color: ColorConstant.secondaryColor, size: 25),
+                    ),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12.0),
                         borderSide:
@@ -135,36 +158,61 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Kendaraan",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                  SizedBox(
-                    height: ScreenSize(context).height * 0.48,
-                    child: FutureBuilder(
-                        future: controller.group,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          return ListView.builder(
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                var data = snapshot.data[index];
-                                return ListGroup(
-                                    groupId: data.id, groupName: data.name, futureDevice: controller.device,);
-                              });
-                        }),
-                  )
-                ],
-              ))
+          Flexible(
+            child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text("Kendaraan",
+                        style:
+                            TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    Flexible(
+                      fit:FlexFit.loose,
+                      child: FutureBuilder(
+                          future: controller.group,
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            if (_isCollapse.isEmpty) {
+                              for (var item in snapshot.data) {
+                                _isCollapse.add(false);
+                              }
+                            }
+                            debugPrint("$_isCollapse");
+                            return _search == ""
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: snapshot.data.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      var data = snapshot.data[index];
+                                      return ListGroup(
+                                        onExpand: (value) => setState(() {
+                                          _isCollapse[index] = value;
+                                          debugPrint("${_isCollapse[index]}");
+                                        }),
+                                        isCollapse: _isCollapse[index],
+                                        groupId: data.id,
+                                        groupIndex: index,
+                                        groupName: data.name,
+                                        futureDevice: controller.device,
+                                      );
+                                    })
+                                : SearchItem(
+                                      group: snapshot.data,
+                                      futureDevice: controller.device,
+                                      search: _search,
+                                );
+                          }),
+                    )
+                  ],
+                )),
+          )
         ],
       ),
     );
