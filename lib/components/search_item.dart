@@ -4,6 +4,7 @@ import 'package:metro_tracking_new/domain/model/devices.dart';
 import 'package:metro_tracking_new/domain/model/groups.dart';
 import 'package:metro_tracking_new/screens/track_screen.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
+import 'package:oktoast/oktoast.dart';
 
 class SearchItem extends StatelessWidget {
   final String search;
@@ -19,6 +20,7 @@ class SearchItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String groupName = "";
+    int groupIndex = 0;
     return FutureBuilder(
       future: futureDevice,
       builder: (BuildContext context, AsyncSnapshot snap) {
@@ -36,18 +38,30 @@ class SearchItem extends StatelessWidget {
                   groupName = item.name;
                 }
               }
-              var time =
-                  DateFormat('dd-MM-yyyy hh:mm a').format(data.lastUpdate);
+              for (var i = 0; i < group.length; i++) {
+                if (group[i].id == data.groupId &&
+                    data.name.toLowerCase().contains(search.toLowerCase())) {
+                  groupIndex = i;
+                  debugPrint("groupIndex : $groupIndex");
+                  break;
+                }
+              }
+              var time = data.lastUpdate != null
+                  ? DateFormat('dd-MM-yyyy hh:mm a')
+                      .format(DateTime.parse(data.lastUpdate))
+                  : "null";
               return data.name.toLowerCase().contains(search.toLowerCase())
                   ? InkWell(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TrackScreen(
-                                    device: data,
-                                    index: index,
-                                    groupName: groupName)));
+                        data.lastUpdate != null
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TrackScreen(
+                                        device: data,
+                                        index: groupIndex,
+                                        groupName: groupName)))
+                            : showToast("Device belum pernah terhubung");
                       },
                       child: listTileDevice(
                           data.name, data.attributes.platNomer ?? "null", time),

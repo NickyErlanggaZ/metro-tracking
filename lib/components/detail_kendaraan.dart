@@ -20,7 +20,7 @@ class DetailKendaraan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var time = DateFormat('dd MMM yyyy | hh:mm a').format(data.lastUpdate);
+    var time = DateFormat('dd MMM yyyy | hh:mm a').format(DateTime.parse(data.lastUpdate));
     return Container(
       width: 320,
       margin: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),

@@ -32,7 +32,7 @@ class Devices {
     String name;
     String uniqueId;
     String status;
-    DateTime lastUpdate;
+    dynamic lastUpdate;
     int positionId;
     List<dynamic> geofenceIds;
     dynamic phone;
@@ -48,7 +48,7 @@ class Devices {
         name: json["name"],
         uniqueId: json["uniqueId"],
         status: json["status"],
-        lastUpdate: DateTime.parse(json["lastUpdate"]),
+        lastUpdate: json["lastUpdate"],
         positionId: json["positionId"],
         geofenceIds: List<dynamic>.from(json["geofenceIds"].map((x) => x)),
         phone: json["phone"],

@@ -4,6 +4,7 @@ import 'package:metro_tracking_new/screens/track_screen.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
 import 'package:metro_tracking_new/utils/custom_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:oktoast/oktoast.dart';
 
 class ListGroup extends StatelessWidget {
   final bool isCollapse;
@@ -80,26 +81,20 @@ class ListGroup extends StatelessWidget {
                       itemCount: snap.data.length,
                       itemBuilder: (BuildContext context, int index) {
                         var data = snap.data[index];
-                        var time = DateFormat('dd-MM-yyyy hh:mm a')
-                            .format(data.lastUpdate);
+                        var time = data.lastUpdate != null ? DateFormat('dd-MM-yyyy hh:mm a')
+                            .format(DateTime.parse(data.lastUpdate)) : "null";
                         return data.groupId == groupId
                             ? InkWell(
                                 onTap: () {
-                                  Navigator.push(
+                                  data.lastUpdate != null ? Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => TrackScreen(
-                                              device: data, index: groupIndex, groupName: groupName,)));
+                                              device: data, index: groupIndex, groupName: groupName,))) : showToast("Device belum pernah terhubung");
                                 },
                                 child: listTileDevice(data.name,
                                     data.attributes.platNomer ?? "null", time))
-                            : _count == 0 && data.groupId == groupId
-                                ? const Center(
-                                    child: Padding(
-                                    padding: EdgeInsets.all(25.0),
-                                    child: Text("Tidak ada"),
-                                  ))
-                                : const SizedBox();
+                            : const SizedBox();
                       })
                 ],
               );

@@ -160,16 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text("Kendaraan",
-                        style:
-                            TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600)),
                     Flexible(
-                      fit:FlexFit.loose,
+                      fit: FlexFit.loose,
                       child: FutureBuilder(
                           future: controller.group,
                           builder:
@@ -204,10 +205,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     })
                                 : SearchItem(
-                                      group: snapshot.data,
-                                      futureDevice: controller.device,
-                                      search: _search,
-                                );
+                                    group: snapshot.data,
+                                    futureDevice: controller.device,
+                                    search: _search,
+                                  );
                           }),
                     )
                   ],

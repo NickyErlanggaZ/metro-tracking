@@ -8,6 +8,7 @@ import 'package:metro_tracking_new/controller/track_controller.dart';
 import 'package:metro_tracking_new/domain/model/devices.dart';
 import 'package:metro_tracking_new/domain/model/positions.dart';
 import 'package:metro_tracking_new/utils/color_constant.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:metro_tracking_new/utils/app_constant.dart';
 
@@ -38,18 +39,18 @@ class _TrackScreenState extends State<TrackScreen> {
   @override
   void initState() {
     _position =
-        controller.position(widget.device.id, "${widget.device.lastUpdate}");
+        controller.position(widget.device.id, "${DateTime.parse(widget.device.lastUpdate)}");
     _markerIcon = controller.markerIcon(widget.groupName);
     _refresh();
     super.initState();
   }
 
   void _refresh() {
-    Timer.periodic(const Duration(seconds: 30), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
       if (mounted) {
         setState(() {
           _position = controller.position(
-              widget.device.id, "${widget.device.lastUpdate}");
+              widget.device.id, "${DateTime.parse(widget.device.lastUpdate)}");
         });
       }
     });
@@ -184,21 +185,22 @@ class _TrackScreenState extends State<TrackScreen> {
                                                                 int index) {
                                                           var data = snapshot
                                                               .data[index];
-                                                          var time = DateFormat(
+                                                          var time = data
+                                                                  .lastUpdate != null ? DateFormat(
                                                                   'dd-MM-yyyy hh:mm a')
-                                                              .format(data
-                                                                  .lastUpdate);
+                                                              .format(DateTime.parse(data
+                                                                  .lastUpdate)) : "null";
                                                           return item.id ==
                                                                   data.groupId
                                                               ? InkWell(
                                                                   onTap: () {
-                                                                    setState(
+                                                                    data.lastUpdate != null ? setState(
                                                                         () {
                                                                       widget.device =
                                                                           data;
                                                                       _position = controller.position(
                                                                           data.id,
-                                                                          "${data.lastUpdate}");
+                                                                          "${DateTime.parse(data.lastUpdate)}");
                                                                       _markerIcon =
                                                                           controller
                                                                               .markerIcon(item.name);
@@ -208,7 +210,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                                                               posisi!.latitude,
                                                                               posisi!.longitude),
                                                                           20);
-                                                                    });
+                                                                    }): showToast("Device belum pernah terhubung");
                                                                   },
                                                                   child:
                                                                       Container(
@@ -244,7 +246,7 @@ class _TrackScreenState extends State<TrackScreen> {
                                                                               fontWeight: FontWeight.w500)),
                                                                       subtitle: Text(
                                                                           data.attributes
-                                                                              .platNomer,
+                                                                              .platNomer ?? "null",
                                                                           style: TextStyle(
                                                                               color: ColorConstant.inActiveColor,
                                                                               fontSize: 14,
@@ -294,9 +296,11 @@ class _TrackScreenState extends State<TrackScreen> {
                                 initialCameraPosition: CameraPosition(
                                     target: LatLng(snapshot.data[0].latitude,
                                         snapshot.data[0].longitude),
-                                    zoom: 20),
+                                    zoom: 15),
                                 onMapCreated: (GoogleMapController controller) {
                                   _controller.complete(controller);
+                                  controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(zoom: 15,target:LatLng(snapshot.data[0].latitude,
+                                        snapshot.data[0].longitude))));
                                 },
                                 markers: {
                                   Marker(
